@@ -12,17 +12,9 @@ public class Main {
             Operation readData = (Operation) Class.forName("ro.ase.acs.Read").getConstructor().newInstance();
             Operation close = (Operation) Class.forName("ro.ase.acs.Close").getConstructor().newInstance();
 
-            Orchestrator orchestrator = new Orchestrator(create);
-            orchestrator.execute(create);
-
-            orchestrator = new Orchestrator(insertData);
-            orchestrator.execute(insertData);
-
-            orchestrator = new Orchestrator(readData);
-            orchestrator.execute(readData);
-
-            orchestrator = new Orchestrator(close);
-            orchestrator.execute(close);
+            Orchestrator orchestrator = new Orchestrator(create, insertData, readData, close);
+            orchestrator.executeSql(create, insertData, readData, close);
+            orchestrator.executeNoSql(create, insertData, readData, close);
 
         } catch (Exception e) {
             e.printStackTrace();

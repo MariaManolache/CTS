@@ -12,23 +12,39 @@ import java.sql.SQLException;
 
 public class Orchestrator {
 
-    private Operation operation;
+    private Operation createOperation;
+    private Operation insertOperation;
+    private Operation readOperation;
+    private Operation closeOperation;
 
-    public Orchestrator(Operation operation) {
-        this.operation = operation;
+
+    public Orchestrator(Operation createOperation, Operation insertOperation, Operation readOperation, Operation closeOperation) {
+        this.createOperation = createOperation;
+        this.insertOperation = insertOperation;
+        this.readOperation = readOperation;
+        this.closeOperation = closeOperation;
     }
 
-    public void execute(Operation operation) throws SQLException {
+    public void executeSql(Operation createOperation, Operation insertOperation, Operation readOperation, Operation closeOperation) throws SQLException {
         Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
         connection.setAutoCommit(false);
 
-        operation.manipulate(connection);
+        createOperation.manipulate(connection);
+        insertOperation.manipulate(connection);
+        readOperation.manipulate(connection);
+        closeOperation.manipulate(connection);
+    }
+
+    public void executeNoSql(Operation createOperation, Operation insertOperation, Operation readOperation, Operation closeOperation) {
 
         MongoClient mongoClient = new MongoClient("localhost", 27017);
         MongoDatabase mongoDb = mongoClient.getDatabase("test");
 
         MongoCollection<Document> collection = mongoDb.getCollection("employees");
 
-        operation.manipulate(mongoClient, mongoDb, collection);
+        createOperation.manipulate(mongoClient, mongoDb, collection);
+        insertOperation.manipulate(mongoClient, mongoDb, collection);
+        readOperation.manipulate(mongoClient, mongoDb, collection);
+        closeOperation.manipulate(mongoClient, mongoDb, collection);
     }
 }
